@@ -1,10 +1,15 @@
 # -*- coding: UTF-8 -*-
+import os
 import traceback
 
 import cx_Oracle
-from python.no_work.utils import mlogger, ORACLE_INFO
+
+from common.property import ORACLE_INFO
+from common.utils import mlogger
 
 logger = mlogger.mlog
+os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.UTF8'
+os.environ['path'] = 'H:\instantclient-basic-windows.x64-11.2.0.4.0\instantclient_11_2'
 
 
 class OralceCursor(object):
