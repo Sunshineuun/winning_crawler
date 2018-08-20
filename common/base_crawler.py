@@ -10,8 +10,8 @@ from email.mime.text import MIMEText
 
 from bs4 import BeautifulSoup
 
-from common.property import ERROR_EMAIL_SUBJECT, ERROR_EMAIL_SENDER, ERROR_EMAIL_PW, DEFAULT_RECEIVER, EMIAL_HOST, \
-    ERROR_SENDER_NICK
+from common.property import ERROR_EMAIL_SUBJECT, DEFAULT_RECEIVER, EMIAL_HOST, \
+    ERROR_SENDER_NICK, EMIAL_SYS, EMIAL_SYS_PW
 from common.urlpool import URLPool
 from common.utils import mlogger
 from common.utils.common import getNowDate, remove_blank
@@ -234,8 +234,8 @@ class BaseCrawler(object):
         # 发送
         smtp = smtplib.SMTP()
         smtp.connect(EMIAL_HOST, 25)
-        smtp.login(ERROR_EMAIL_SENDER, ERROR_EMAIL_PW)
-        smtp.sendmail(ERROR_EMAIL_SENDER, kwargs['receiver'], msg.as_string())
+        smtp.login(EMIAL_SYS, EMIAL_SYS_PW)
+        smtp.sendmail(EMIAL_SYS, kwargs['receiver'], msg.as_string())
         smtp.quit()
 
     @abstractmethod
