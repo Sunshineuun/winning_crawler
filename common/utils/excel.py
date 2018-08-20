@@ -6,7 +6,7 @@ import xlwt
 import xlsxwriter
 from pathlib import Path
 
-from common.utils import MONGO_IP, MONGO_PORT
+from common.property import MONGO_IP, MONGO_PORT
 
 
 class WriteXLSXCustom(object):
