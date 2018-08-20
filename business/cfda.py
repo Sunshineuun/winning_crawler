@@ -7,9 +7,9 @@ import time
 import re
 import random
 
-from python.no_work.crawler.base_crawler import BaseCrawler
-from python.no_work.utils.common import reg
-from python.no_work.utils.oracle import OralceCursor
+from common.base_crawler import BaseCrawler
+from common.utils.common import reg
+from common.utils.oracle import OralceCursor
 
 insert_sql = """
 INSERT INTO KBMS_DFSX_KNOWLEDGE_UP (ID, PRODUCT_NAME, TRAD_NAME, SPEC, PERMIT_NO,
@@ -94,7 +94,7 @@ class cfda(BaseCrawler):
         self.__domain_url = 'http://app1.sfda.gov.cn/datasearch/face3/'
         self.__href_re = 'javascript:commitForECMA[\u4e00-\u9fa50-9a-zA-Z\(\)\?&=,\'.]+'
 
-        # self.oralce_cursor = OralceCursor()
+        self.oralce_cursor = OralceCursor()
         super().__init__(ip)
 
     def _get_cn_name(self):
