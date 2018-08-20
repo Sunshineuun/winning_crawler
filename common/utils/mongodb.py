@@ -16,7 +16,7 @@ import datetime
 
 import pymongo
 
-from common.utils import MONGO_PORT, MONGO_IP
+from common.property import MONGO_IP, MONGO_PORT
 
 
 class MongodbCursor(object):
