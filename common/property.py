@@ -90,7 +90,7 @@ PROXY_IP2 = [
 ]
 
 # mongodb数据源配置
-MONGO_IP = '192.168.5.94'
+MONGO_IP = '192.168.16.113'
 MONGO_PORT = 27017
 
 # ORACLE数据源配置
