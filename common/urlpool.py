@@ -4,10 +4,9 @@
 """
 url资源池
 """
-import datetime
 import queue
 
-from python.no_work.utils.common import getNowDate
+from common.utils.common import getNowDate
 
 
 class URLPool(object):
