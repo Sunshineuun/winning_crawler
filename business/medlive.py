@@ -18,7 +18,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from pymongo import MongoClient
 
 from common.base_crawler import BaseCrawler
-from common.property import EMIAL_HOST, ERROR_EMAIL_SENDER, ERROR_EMAIL_PW
+from common.property import EMIAL_HOST, ERROR_EMAIL_SENDER, ERROR_EMAIL_PW, EMIAL_SYS_PW, EMIAL_SYS
 from common.utils.common import getNowDate
 from common.utils.excel import WriteXLSXCustom
 
@@ -188,8 +188,8 @@ class crawler2YMT(BaseCrawler):
         # 发送
         smtp = smtplib.SMTP()
         smtp.connect(EMIAL_HOST, 25)
-        smtp.login(ERROR_EMAIL_SENDER, ERROR_EMAIL_PW)
-        smtp.sendmail(ERROR_EMAIL_SENDER, 'qiushengming@aliyun.com', msg.as_string())
+        smtp.login(EMIAL_SYS, EMIAL_SYS_PW)
+        smtp.sendmail(EMIAL_SYS, 'wangfumin@tech-winning.com', msg.as_string())
         smtp.quit()
 
 
