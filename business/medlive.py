@@ -50,8 +50,8 @@ class crawler2YMT(BaseCrawler):
             result.append({
                 'url': url.format(q=k.replace('*', '')),
                 'type': self._get_cn_name(),
+                'key': k
             })
-
         return result
 
     def request(self, d):
@@ -66,6 +66,7 @@ class crawler2YMT(BaseCrawler):
                 title = ps[0].a.text
                 data = {
                     '名称': self._get_cn_name(),
+                    'KEY': d['key'],
                     '标题': title,
                     'URL': ps[0].a['href'],
                     '父URL': d['url'],
@@ -91,6 +92,7 @@ class crawler2YMT(BaseCrawler):
                     self._urlpool.save_url({
                         'url': d['url'] + '&page=' + str(p),
                         'type': self._get_cn_name(),
+                        'key': d['key']
                     })
                     # 当URL在今天队列中，就不再加入
                     # today_minTime = dt.datetime.combine(datetime.now(), dt.time.min)
@@ -124,7 +126,7 @@ class crawler2YMT(BaseCrawler):
         """
         content = self.email_msg
 
-        title = ['名称', '标题', 'URL']
+        title = ['名称', 'KEY', '标题', 'URL']
 
         path = '\\excel\\{}_{}'.format(datetime.now().strftime('%Y-%m-%d %H'),
                                        self._get_name())
@@ -165,7 +167,18 @@ class crawler2YMT(BaseCrawler):
         msg['To'] = 'qiushengming'  # 收件人昵称
 
         # 正文
-        msg.attach(MIMEText('{}，数据更新内容详情见附件'.format(path), 'plain', 'utf-8'))
+        """
+            站点名称：
+            搜索关键字：self.key.join(',')
+            搜索结果：共计N条
+            搜索结果详报：path
+        """
+        正文 = '站点名称：{zd}\n搜索关键字：{key}\n搜索结果统计：共计{count}条\n搜索结果详报：{fn}'.format(
+            zd=self._get_cn_name(),
+            fn=path.split('\\')[-1],
+            key=','.join(self.key),
+            count=len(self.email_msg))
+        msg.attach(MIMEText(正文, 'plain', 'utf-8'))
 
         xlsxpart = MIMEApplication(open(path, 'rb').read())
         # 注意：此处basename要转换为gbk编码，否则中文会有乱码。
@@ -181,26 +194,4 @@ class crawler2YMT(BaseCrawler):
 
 
 if __name__ == '__main__':
-    # crawler2YMT()
-    def job():
-        print("I'm working...")
-
-
-    client = MongoClient(host='127.0.0.1', port=27017)
-    mongodb = MongoDBJobStore(client=client)
-    jobstores = {
-        'mongodb': MongoDBJobStore(),
-        'default': MemoryJobStore()
-    }
-    executors = {
-        'default': ThreadPoolExecutor(10),
-        'processpool': ProcessPoolExecutor(3)
-    }
-    job_defaults = {
-        'coalesce': False,
-        'max_instances': 3
-    }
-    sched = BlockingScheduler(jobstore=jobstores, executors=executors, job_defaults=job_defaults)
-    sched.add_jobstore('mongodb', collection='example_jobs', database='minnie')
-    sched.add_job(job, 'cron', day_of_week='mon-fri', hour='8-20', minute="*", second="*/10")
-    sched.start()
+    crawler2YMT()
