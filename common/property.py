@@ -107,6 +107,10 @@ ORACLE_INFO = '{user}/{pd}@{ip}/{sid}'.format(
 # 邮件配置
 # 邮件的HOST
 EMIAL_HOST = 'smtp.tech-winning.com'
+# 系统管理员用户名
+EMIAL_SYS = 'qiushengming@tech-winning.com'
+# 系统管理员密码
+EMIAL_SYS_PW = 'Winning123'
 # 错误日志发送的主题配置
 ERROR_EMAIL_SUBJECT = '爬虫Error通知'
 # 错误日志发送发件人配置
