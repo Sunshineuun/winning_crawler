@@ -32,9 +32,7 @@ class BaseCrawler(object):
         但是这里有个问题，如果站点庞杂，所产生的属性会比较多。
     """
 
-    def __init__(self, ip=None):
-        if not ip:
-            ip = '127.0.0.1'
+    def __init__(self):
         # 日志记录器
         self.log = mlogger.mlog
 
@@ -90,7 +88,8 @@ class BaseCrawler(object):
         # if self._urlpool.find_all_count():
         #     return
         result = self._init_url()
-        self._urlpool.save_url(result)
+        if result:
+            self._urlpool.save_url(result)
 
     def __requests(self):
         """
