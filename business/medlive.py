@@ -9,16 +9,8 @@ from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from apscheduler.executors.pool import ProcessPoolExecutor
-from apscheduler.executors.pool import ThreadPoolExecutor
-from apscheduler.jobstores.memory import MemoryJobStore
-from apscheduler.jobstores.mongodb import MongoDBJobStore
-from apscheduler.schedulers.blocking import BlockingScheduler
-
-from pymongo import MongoClient
-
 from common.base_crawler import BaseCrawler
-from common.property import EMIAL_HOST, ERROR_EMAIL_SENDER, ERROR_EMAIL_PW, EMIAL_SYS_PW, EMIAL_SYS
+from common.property import EMIAL_HOST, EMIAL_SYS_PW, EMIAL_SYS
 from common.utils.common import getNowDate
 from common.utils.excel import WriteXLSXCustom
 
