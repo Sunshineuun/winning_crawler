@@ -90,12 +90,12 @@ class cfda(BaseCrawler):
     需要提交
     """
 
-    def __init__(self, ip='127.0.0.1'):
+    def __init__(self):
         self.__domain_url = 'http://app1.sfda.gov.cn/datasearch/face3/'
         self.__href_re = 'javascript:commitForECMA[\u4e00-\u9fa50-9a-zA-Z\(\)\?&=,\'.]+'
 
         self.oralce_cursor = OralceCursor()
-        super().__init__(ip)
+        super().__init__()
 
     def _get_cn_name(self):
         return 'CFDA'
@@ -110,6 +110,9 @@ class cfda(BaseCrawler):
         page:翻页参数
         :return:
         """
+        if self._urlpool.find_all_count():
+            return
+
         url = 'http://app1.sfda.gov.cn/datasearch/face3/search.jsp?tableId={code}&curstart={page}'
         result = []
         p = {
@@ -254,7 +257,12 @@ class cfda(BaseCrawler):
                    'PRODUCTION_UNIT', 'CODE']
 
         # 循环记录
-        for data in self._data_cursor.find():
+        rows = []
+        for i, data in enumerate(self._data_cursor.find()):
+            if i % 10000 == 0 and i:
+                self.oralce_cursor.executeSQLParams(sql, rows)
+                rows.clear()
+                self.log.info(i)
             row = ['0', '1', '2', '3', '4', '5', '6', '', '8']
             # 字典
             for i, k in enumerate(params1):
@@ -285,12 +293,65 @@ class cfda(BaseCrawler):
                 for code in row[7].split('；'):
                     row[0] = reg('[0-9]{14}', code)
                     row[3] = reg('\[.*\]', code).replace('[', '').replace(']', '')
-                    self.oralce_cursor.executeSQLParams(sql, row)
+                    rows.append(row)
             else:
-                self.oralce_cursor.executeSQLParams(sql, row)
+                rows.append(row)
 
         # 更新数据
         # self.oralce_cursor.executeSQL(update_sql)
         # 插入数据
         # self.oralce_cursor.executeSQL(insert_sql)
         self.log.info('数据库存储结束')
+
+    def htmlToOracle(self):
+        cursor = OralceCursor(oracle_info='bian/bian@192.168.16.103/orcl')
+        result = cursor.fechall("SELECT COUNT(1) FROM USER_TABLES WHERE TABLE_NAME = "
+                                "'CFDA_HTML_HISTORY'")
+        # 如果表不存在创建表
+        if not result[0][0]:
+            create_sql = """
+            CREATE TABLE CFDA_HTML_HISTORY(
+              ID VARCHAR(36),
+              SOURCE VARCHAR(36),
+              TYPE VARCHAR(36),
+              URL VARCHAR(255),
+              TREE VARCHAR(2),
+              IS_ENABLE VARCHAR(2),
+              HTML        CLOB,
+              CREATE_DATE DATE
+            )
+            """
+            cursor.executeSQL(create_sql)
+        insert_sql = """
+        INSERT INTO CFDA_HTML_HISTORY (ID, SOURCE, TYPE, URL, TREE, IS_ENABLE, HTML, CREATE_DATE)
+              VALUES (:1, :2, :3, :4, :5, :6, :7, :8)
+        """
+        keys = ['_id', 'source', 'type', 'url', 'tree', 'isenable', 'html', 'create_date']
+        rows = []
+        for i1, d in enumerate(self._html_cursor.find()[65307:]):
+            if i1 % 10000 == 0 and i1:
+                cursor.executeSQLParams(insert_sql, rows)
+                rows.clear()
+                self.log.info(i1)
+            row = ['0', '1', '2', '3', '4', '5', '6', '7']
+            for i, k in enumerate(keys):
+                if k == 'create_date':
+                    if not(type(d[k]) == datetime.datetime):
+                        row[i] = datetime.datetime.strptime(d[k], '%Y-%m-%d %H:%M:%S')
+                    else:
+                        row[i] = d[k]
+                    continue
+                row[i] = str(d[k])
+            rows.append(row)
+        insert_sql = """
+        INSERT INTO DATA_GATHER_COUNT (CODE, COUNT, TIME)
+        select 'X008' CODE, COUNT(1) COUNT, TRUNC(MIN(CREATE_DATE), 'IW') TIME  from
+          CFDA_HTML_HISTORY
+        GROUP BY TO_CHAR(CREATE_DATE,'yyyy-IW')
+        ORDER BY TO_CHAR(CREATE_DATE,'yyyy-IW')
+        """
+        cursor.executeSQL(insert_sql)
+
+
+if __name__ == '__main__':
+    cfda().htmlToOracle()
