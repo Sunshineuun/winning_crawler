@@ -8,17 +8,18 @@ import os
 
 
 def get_defalut_logger():
-    filename = 'D:\Temp\Python_Log\python_log.log'
+    filename = 'C:\Temp\Python_Log\python_log.log'
     # 创建log存储目录
-    if not os.path.exists('D:\Temp\Python_Log'):
+    if not os.path.exists('C:\Temp\Python_Log'):
         print('创建日志文件夹！')
-        os.makedirs('D:\Temp\Python_Log')
+        os.makedirs('C:\Temp\Python_Log')
 
     # 获取logger实例，如果参数为空则返回root logger
     logger = logging.getLogger()
 
     # 指定logger输出格式
-    formatter = logging.Formatter('%(asctime)s %(name)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s')
+    formatter = logging.Formatter('%(asctime)s %(name)s %(filename)s[line:%(lineno)d] '
+                                  '%(levelname)s %(message)s')
 
     # 文件日志
     """
