@@ -113,6 +113,9 @@ class URLPool(object):
             params['insert_date'] = getNowDate()
         self.cursor.insert(params)
 
+    def count(self):
+        return self.cursor.find().count()
+
 
 if __name__ == '__main__':
     """
