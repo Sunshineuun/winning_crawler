@@ -62,7 +62,12 @@ class Crawler(object):
         2.代理更新方法
     """
 
-    def __init__(self):
+    def __init__(self, is_proxy):
+        """
+
+        :param is_proxy: 是否启用代理
+        """
+        self.__is_proxy = is_proxy
         self.__log = mlogger.mlog
         self.__mongo = pymongo.MongoClient('192.168.16.113', 27017)
         self.__error_cursor = self.__mongo['minnie']['crawler_error']
@@ -208,10 +213,15 @@ class Crawler(object):
         desired_capabilities = DesiredCapabilities.CHROME
         desired_capabilities['loggingPrefs'] = {'performance': 'ALL'}
 
-        driver = webdriver.Chrome(executable_path=self.__executable_path,
-                                  chrome_options=options,
-                                  desired_capabilities=desired_capabilities,
-                                  service_log_path=self.__service_log_path)
+        if self.__is_proxy:
+            driver = webdriver.Chrome(executable_path=self.__executable_path,
+                                      desired_capabilities=desired_capabilities,
+                                      service_log_path=self.__service_log_path)
+        else:
+            driver = webdriver.Chrome(executable_path=self.__executable_path,
+                                      chrome_options=options,
+                                      desired_capabilities=desired_capabilities,
+                                      service_log_path=self.__service_log_path)
         driver.implicitly_wait(5)
         return driver
 
