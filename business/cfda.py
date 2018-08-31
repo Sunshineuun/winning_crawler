@@ -97,7 +97,7 @@ class cfda(BaseCrawler):
 
         KBMS = 'KBMS/KBMSwfm@192.168.3.99/orcl'
         self.oralce_cursor = OralceCursor(KBMS)
-        super().__init__()
+        super().__init__(is_porxy=False)
 
     def _get_cn_name(self):
         return 'CFDA'
