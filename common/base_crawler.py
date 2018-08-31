@@ -163,7 +163,11 @@ class BaseCrawler(object):
         启动方法
         :return:
         """
-        self.__requests()
+        while self._html_cursor.find().count() >= self._urlpool.count():
+            self.__requests()
+            html_count = self._html_cursor.find().count()
+            url_count = self._urlpool.count()
+            self.log.info('HTML的数量{},URL的数量{}'.format(html_count, url_count))
         self.__parsers()
         self.__pushMail()
         if self._crawler.driver:
