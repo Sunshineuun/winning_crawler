@@ -103,7 +103,7 @@ class cfda(BaseCrawler):
         return 'CFDA'
 
     def _get_name(self):
-        return 'cfda'
+        return 'cfda_9'
 
     def _init_url(self):
         """
@@ -139,7 +139,9 @@ class cfda(BaseCrawler):
 
     def request(self, d):
         time.sleep(2)
-        # home_url = 'http://app1.sfda.gov.cn/datasearch/face3/base.jsp?tableId=36&tableName=TABLE36&title=%BD%F8%BF%DA%D2%A9%C6%B7&bcId=124356651564146415214424405468'
+        # home_url = 'http://app1.sfda.gov.cn/datasearch/face3/base.jsp?
+        # tableId=36&tableName=TABLE36&title=%BD%F8%BF%DA%D2%A9%C6%B7
+        # &bcId=124356651564146415214424405468'
         d1 = datetime.datetime.now()
         # self._crawler.driver_get_url(home_url)
         html = self._crawler.driver_get_url(d['url'])
