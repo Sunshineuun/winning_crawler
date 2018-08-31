@@ -68,7 +68,7 @@ class Crawler(object):
         # 驱动器地址
         self.__executable_path = 'C:\\chromedriver.exe'
         # 驱动器日志地址
-        self.__service_log_path = 'D:\\Temp\\chromdriver.log'
+        self.__service_log_path = 'C:\\Temp\\chromdriver.log'
         # 请求次数达到一定数量，切换代理。
         self.__request_count = 1
         # 浏览器驱动
@@ -174,9 +174,8 @@ class Crawler(object):
         return domain + '?' + str(parse.urlencode(format_params).encode('utf-8').decode('utf-8'))
 
     def update_proxy(self):
-        proxy_ip = random.choice(PROXY_IP)
+        proxy_ip = PROXY_IP
 
-        print(proxy_ip)
         self.__log.info(proxy_ip)
         # 退出
         if self.driver:
