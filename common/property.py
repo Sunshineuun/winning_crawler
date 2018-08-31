@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 # qiushengming-minnie
-from common.utils.ip_proxy_pool import getProxyIp
+from common.utils.ip_proxy_pool import GET_PROXY_IP
 
 USER_AGENT = [
     "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; AcooBrowser; .NET CLR 1.1.4322; .NET CLR 2.0.50727)",
@@ -73,7 +73,7 @@ USER_AGENT = [
     'Mozilla/5.0(Windows;U;WindowsNT6.1;en-us)AppleWebKit/534.50(KHTML,likeGecko)Version/5.1Safari/534.50',
     'Mozilla/5.0(Macintosh;U;IntelMacOSX10_6_8;en-us)AppleWebKit/534.50(KHTML,likeGecko)Version/5.1Safari/534.50'
 ]
-PROXY_IP = getProxyIp()
+# PROXY_IP =
 # [
 #     {'ip': '192.168.16.137', 'port': '6001', 'type': 'http'},
 #     # {'ip': '192.168.16.113', 'port': '6001', 'type': 'http'},

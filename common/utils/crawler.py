@@ -15,9 +15,10 @@ from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-from common.property import PROXY_IP, PROXY_IP2, USER_AGENT
+from common.property import PROXY_IP2, USER_AGENT
 from common.utils import mlogger
 from common.utils.common import getNowDate
+from common.utils.ip_proxy_pool import GET_PROXY_IP
 
 
 def getHttpStatus(browser):
@@ -174,7 +175,7 @@ class Crawler(object):
         return domain + '?' + str(parse.urlencode(format_params).encode('utf-8').decode('utf-8'))
 
     def update_proxy(self):
-        proxy_ip = PROXY_IP
+        proxy_ip = GET_PROXY_IP()
 
         self.__log.info(proxy_ip)
         # 退出

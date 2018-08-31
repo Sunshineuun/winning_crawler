@@ -12,7 +12,7 @@ mongodb = MongodbCursor()
 ip_con = mongodb.get_cursor('common', 'ip')
 
 
-def getProxyIp():
+def GET_PROXY_IP():
     """
     json格式如下：
         {"error_code":0,"error_message":"","data":[{"ip":"123.158.8.238","port":10039}]}
