@@ -32,7 +32,7 @@ class BaseCrawler(object):
         但是这里有个问题，如果站点庞杂，所产生的属性会比较多。
     """
 
-    def __init__(self):
+    def __init__(self, is_porxy=True):
         # 日志记录器
         self.log = mlogger.mlog
 
@@ -47,7 +47,7 @@ class BaseCrawler(object):
         # URL管理器
         self._urlpool = self.__get_urlpool()
         # 网页下载器
-        self._crawler = Crawler(self._get_cn_name())
+        self._crawler = Crawler(is_porxy)
 
         # 数据存储器
         self._html_cursor = self.__get_html_cursor()
