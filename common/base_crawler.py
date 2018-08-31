@@ -47,7 +47,7 @@ class BaseCrawler(object):
         # URL管理器
         self._urlpool = self.__get_urlpool()
         # 网页下载器
-        self._crawler = Crawler()
+        self._crawler = Crawler(self._get_cn_name())
 
         # 数据存储器
         self._html_cursor = self.__get_html_cursor()
@@ -115,7 +115,7 @@ class BaseCrawler(object):
 
                 d2 = datetime.datetime.now()
                 self.log.info('耗时：' + str((d2 - d1).total_seconds()))
-        except BaseException as e:
+        except:
             msg = '' + self.get_traceback() + '\n' + str(d)
             self.send_error_email(msg)
             self.log.error(msg)
@@ -163,7 +163,7 @@ class BaseCrawler(object):
         启动方法
         :return:
         """
-        while self._html_cursor.find().count() >= self._urlpool.count():
+        while self._html_cursor.find().count() <= self._urlpool.count():
             self.__requests()
             html_count = self._html_cursor.find().count()
             url_count = self._urlpool.count()
