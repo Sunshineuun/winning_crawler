@@ -209,7 +209,7 @@ class Crawler(object):
         desired_capabilities['loggingPrefs'] = {'performance': 'ALL'}
 
         driver = webdriver.Chrome(executable_path=self.__executable_path,
-                                  # chrome_options=options,
+                                  chrome_options=options,
                                   desired_capabilities=desired_capabilities,
                                   service_log_path=self.__service_log_path)
         driver.implicitly_wait(5)
