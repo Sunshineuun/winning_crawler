@@ -53,7 +53,8 @@ FROM (
             CODE_REMARK,
             TYPE,
             CREATE_TIME
-          FROM KBMS_DFSX_KNOWLEDGE_UP_BAK) T1
+          FROM KBMS_DFSX_KNOWLEDGE_UP_BAK
+          WHERE CREATE_TIME > sysdate - 1) T1
     RIGHT JOIN KBMS_DRUG_FROM_SX T2 ON T1.ID = T2.ID
   WHERE TYPE = '1')
 WHERE PRODUCT_NAME LIKE '#%'
@@ -94,7 +95,8 @@ class cfda(BaseCrawler):
         self.__domain_url = 'http://app1.sfda.gov.cn/datasearch/face3/'
         self.__href_re = 'javascript:commitForECMA[\u4e00-\u9fa50-9a-zA-Z\(\)\?&=,\'.]+'
 
-        self.oralce_cursor = OralceCursor()
+        KBMS = 'KBMS/KBMSwfm@192.168.3.99/orcl'
+        self.oralce_cursor = OralceCursor(KBMS)
         super().__init__()
 
     def _get_cn_name(self):
@@ -242,7 +244,10 @@ class cfda(BaseCrawler):
         """
         self.log.info('数据库存储开始')
 
-        sql = 'INSERT INTO KBMS_DFSX_KNOWLEDGE_UP_BAK (ID, PRODUCT_NAME, TRAD_NAME, SPEC, ZC_FORM, PERMIT_NO, PRODUCTION_UNIT, CODE_REMARK, TYPE) VALUES (:1, :2, :3, :4, :5, :6, :7, :8, :9)'
+        sql = 'INSERT INTO KBMS_DFSX_KNOWLEDGE_UP_BAK ' \
+              '(ID, PRODUCT_NAME, TRAD_NAME, SPEC, ZC_FORM, PERMIT_NO, ' \
+              'PRODUCTION_UNIT, CODE_REMARK, TYPE) ' \
+              'VALUES (:1, :2, :3, :4, :5, :6, :7, :8, :9)'
         params = {
             'ID': ['药品本位码'],
             'PRODUCT_NAME': ['产品名称', '产品名称（中文）'],
@@ -298,9 +303,9 @@ class cfda(BaseCrawler):
                 rows.append(row)
 
         # 更新数据
-        # self.oralce_cursor.executeSQL(update_sql)
+        self.oralce_cursor.executeSQL(update_sql)
         # 插入数据
-        # self.oralce_cursor.executeSQL(insert_sql)
+        self.oralce_cursor.executeSQL(insert_sql)
         self.log.info('数据库存储结束')
 
     def htmlToOracle(self):
@@ -354,4 +359,4 @@ class cfda(BaseCrawler):
 
 
 if __name__ == '__main__':
-    cfda().htmlToOracle()
+    cfda().to_oracle()
