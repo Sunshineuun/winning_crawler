@@ -187,7 +187,7 @@ class Crawler(object):
         if proxy_ip:
             # 代理设置
             proxy = request.ProxyHandler(
-                {proxy_ip['type']: proxy_ip['ip'] + ':' + proxy_ip['port']})
+                {proxy_ip['type']: proxy_ip['ip'] + ':' + str(proxy_ip['port'])})
             self.opener = request.build_opener(request.HTTPHandler, proxy)
         else:
             self.opener = request.build_opener(request.HTTPHandler)
