@@ -119,7 +119,7 @@ class disease(BaseCrawler):
             return True, html
 
     def _get_name(self):
-        return 'pmmp_disease1'
+        return 'pmmp_disease'
 
     def _get_cn_name(self):
         return 'pmmp_疾病1'
