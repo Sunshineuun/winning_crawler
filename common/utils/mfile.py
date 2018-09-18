@@ -26,24 +26,25 @@ def getFilePaths(rootDir, fileName='', fileList=None):
 
 
 # 读取文件内容并打印
-def readFile(file_name):
+def readFile(file_name, encoding='utf-8', mode='r'):
     """
     文件的全路径
+    :param mode:
+    :param encoding:
     :param file_name:
     :return:
     """
-    content = ''
-    file_open = open(file_name, 'r', encoding='utf-8')  # r 代表read
-    # for eachLine in file_open:
-    #     content += eachLine
+    file_open = open(file_name, mode=mode)  # r 代表read
     content = file_open.read()
     file_open.close()
     return content
 
 
 # 输入多行文字，写入指定文件并保存到指定文件夹
-def writeFile(file_name, content):
-    file_open = open(file_name, 'w')
-    file_open.write('%s%s' % (content, os.linesep))
+def writeFile(file_name, content, mode='w'):
+    path1 = '\\'.join(file_name.split('\\')[:-1])
+    if not os.path.exists(path1):
+        os.makedirs(path1)
+    file_open = open(file_name, mode=mode)
+    file_open.write(content)
     file_open.close()
-
