@@ -119,7 +119,6 @@ class BaseCrawler(object):
             msg = '' + self.get_traceback() + '\n' + str(d)
             self.send_error_email(msg)
             self.log.error(msg)
-            self.log.error(e)
 
     def __parsers(self):
         """
