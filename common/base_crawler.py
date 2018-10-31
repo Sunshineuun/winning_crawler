@@ -162,7 +162,7 @@ class BaseCrawler(object):
         启动方法
         :return:
         """
-        while self._html_cursor.find().count() <= self._urlpool.count():
+        while not self._urlpool.empty():
             self.__requests()
             html_count = self._html_cursor.find().count()
             url_count = self._urlpool.count()
