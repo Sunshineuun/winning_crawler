@@ -13,7 +13,7 @@ from common.utils.oracle import OralceCursor
 
 insert_sql = """
 INSERT INTO KBMS_DFSX_KNOWLEDGE_UP (ID, PRODUCT_NAME, TRAD_NAME, SPEC, PERMIT_NO,
-                                     CLINICAL_STATE, TYPE, IS_ENABLE, IS_SUBMIT)
+                                     PRODUCTION_UNIT,CLINICAL_STATE, TYPE, IS_ENABLE, IS_SUBMIT)
 SELECT *
   FROM (
     SELECT
@@ -35,7 +35,7 @@ SELECT *
       --       T1.PERMIT_NO CFDA批准文号, T2.PERMIT_NO 药品列表批准文号,
       --    DECODE(T1.PRODUCTION_UNIT, '', ('_' || T2.PRODUCTION_UNIT), T2.PRODUCTION_UNIT, ('_' || T2.PRODUCTION_UNIT), NULL,
       --           ('_' || T2.PRODUCTION_UNIT), ('#_' || T1.PRODUCTION_UNIT))
-      --                   PRODUCTION_UNIT,
+      T2.PRODUCTION_UNIT PRODUCTION_UNIT,
       --       T1.PRODUCTION_UNIT CFDA生产单位, T2.PRODUCTION_UNIT 药品列表生产单位,
       CASE WHEN T2.CLINICAL_STATE = '注销' AND T1.ID IS NOT NULL
         THEN '#_正常'
@@ -106,7 +106,7 @@ class cfda(BaseCrawler):
         return 'CFDA'
 
     def _get_name(self):
-        return 'cfda_9'
+        return 'cfda_10'
 
     def _init_url(self):
         """
