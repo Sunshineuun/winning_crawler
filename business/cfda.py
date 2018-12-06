@@ -7,6 +7,7 @@ import time
 import re
 import random
 
+from copy import deepcopy
 from common.base_crawler import BaseCrawler
 from common.utils.common import reg
 from common.utils.oracle import OralceCursor
@@ -17,7 +18,7 @@ INSERT INTO KBMS_DFSX_KNOWLEDGE_UP (ID, PRODUCT_NAME, TRAD_NAME, SPEC, PERMIT_NO
 SELECT *
 FROM (
   SELECT
-    T2.ID                             ID,
+    NVL(T2.ID,T1.ID)                             ID,
     DECODE(T1.PRODUCT_NAME, '', ('_' || T2.PRODUCT_NAME), T2.PRODUCT_NAME,
            ('_' || T2.PRODUCT_NAME), NULL, ('_' || T2.PRODUCT_NAME),
            ('#_' || T1.PRODUCT_NAME)) PRODUCT_NAME,
@@ -37,12 +38,18 @@ FROM (
     --           ('_' || T2.PRODUCTION_UNIT), ('#_' || T1.PRODUCTION_UNIT))
     T2.PRODUCTION_UNIT                PRODUCTION_UNIT,
     --       T1.PRODUCTION_UNIT CFDA生产单位, T2.PRODUCTION_UNIT 药品列表生产单位,
-    CASE WHEN T2.CLINICAL_STATE = '注销' AND T1.ID IS NOT NULL
+    CASE WHEN (T2.CLINICAL_STATE = '注销' OR T2.ID IS NULL) AND T1.ID IS NOT NULL
+      -- SX中为注销或者不存在，但是CFDA存在，那么他将变为正常；
       THEN '#_正常'
     WHEN T1.ID IS NOT NULL
+      -- sx中不为注销（就是正常），CFDA中存在，那么他变为正常。
       THEN '_正常'
-    ELSE '_注销' END                    CLINICAL_STATE,
-    '1'                               TYPE,
+    ELSE '_注销' END                     CLINICAL_STATE, -- sx不为注销，但是cfda不存在，那么为注销。
+    CASE WHEN T2.ID IS NOT NULL
+      THEN '1'
+    WHEN T1.ID IS NOT NULL
+      THEN '0'
+        END TYPE,
     '1'                               IS_ENABLE,
     '0'                               IS_SUBMIT
   FROM (SELECT
@@ -58,7 +65,7 @@ FROM (
           CREATE_TIME
         FROM KBMS_DFSX_KNOWLEDGE_UP_BAK
         WHERE CREATE_TIME > sysdate - 1) T1
-    RIGHT JOIN (SELECT
+    FULL OUTER JOIN (SELECT
                   REPLACE(REPLACE(REPLACE(PRODUCT_NAME, ' ', ''), '）', ')'), '（', '(') PRODUCT_NAME,
                   REPLACE(REPLACE(REPLACE(TRAD_NAME, ' ', ''), '）', ')'), '（', '(')    TRAD_NAME,
                   REPLACE(REPLACE(REPLACE(SPEC, ' ', ''), '）', ')'), '（', '(')         SPEC,
@@ -68,11 +75,11 @@ FROM (
                   CLINICAL_STATE
                 FROM KBMS_DRUG_FROM_SX) T2 ON T1.ID = T2.ID
   WHERE TYPE = '1')
-WHERE PRODUCT_NAME LIKE '#%'
+WHERE (PRODUCT_NAME LIKE '#%'
       OR TRAD_NAME LIKE '#%'
       OR SPEC LIKE '#%'
       OR PERMIT_NO LIKE '#%'
-      OR CLINICAL_STATE LIKE '#%'
+      OR CLINICAL_STATE LIKE '#%')
 
 """
 update_sql = """
@@ -113,7 +120,7 @@ class cfda(BaseCrawler):
         return 'CFDA'
 
     def _get_name(self):
-        return 'cfda_10'
+        return 'cfda_11'
 
     def _init_url(self):
         """
@@ -304,13 +311,26 @@ class cfda(BaseCrawler):
                 row[8] = '0'
 
             # 校验本位码农是否多个
-            if len(row[0]) < 10:
+            if len(row[0]) < 10 or not row[0].__contains__("；"):
                 continue
             if row[7] != '':
+                index = 0
+                map = {}
                 for code in row[7].split('；'):
-                    row[0] = reg('[0-9]{14}', code)
-                    row[3] = reg('\[.*\]', code).replace('[', '').replace(']', '')
-                    rows.append(row)
+                    if code:
+                        a1 = reg('[0-9]{14}', code)
+                        a2 = reg('\[.*\]', code).replace('[', '').replace(']', '')
+                        map[a1] = a2
+
+                for code in row[0].split('；'):
+                    # 分割后code可能为空，所以通过reg函数处理返回回来的结果为空。
+                    if not reg('[0-9]{14}', code) and index >= 1:
+                        continue
+                    row1 = deepcopy(row)
+                    row1[0] = reg('[0-9]{14}', code)
+                    row1[3] = map.get(code)
+                    rows.append(row1)
+                    index += 1
             else:
                 rows.append(row)
 
